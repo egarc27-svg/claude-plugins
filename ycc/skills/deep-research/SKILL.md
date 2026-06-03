@@ -7,6 +7,15 @@ description: Conduct strategic multi-perspective research using the Asymmetric R
 
 Strategic, multi-perspective research skill using the Asymmetric Research Squad methodology. Deploys 8 specialized persona agents to uncover insights from diverse viewpoints, followed by crucible analysis and emergent insight generation.
 
+## Search & Scrape Engines (Exa + Firecrawl)
+
+This skill prefers MCP-backed search and extraction when those servers are configured, and falls back to the built-in tools otherwise. Pass these engine preferences into every persona prompt (Step 7) and the evidence-triangulation step (Step 12):
+
+- **Search** — Prefer the **Exa** MCP (`web_search_exa`; also `research_paper_search` and `company_research` where the persona's angle fits) as the primary engine for all persona queries. Fall back to the built-in **`WebSearch`** tool if Exa is not available.
+- **Content extraction / primary sources** — Prefer the **Firecrawl** MCP (`firecrawl_scrape` for a single page, `firecrawl_search` for search-and-scrape, `firecrawl_crawl` for a site sweep) to pull full-text primary sources during persona research and Step 12 verification. Fall back to the built-in **`WebFetch`** tool if Firecrawl is not available.
+
+If neither Exa nor Firecrawl is configured, the skill still runs end-to-end on `WebSearch`/`WebFetch` — note `running on built-in search (Exa/Firecrawl not configured)` in `objective.md` and proceed. Never block the run on a missing MCP.
+
 ## Current Research Subject
 
 **Researching**: `$ARGUMENTS`
