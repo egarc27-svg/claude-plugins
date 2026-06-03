@@ -7,6 +7,32 @@ description: Conduct strategic multi-perspective research using the Asymmetric R
 
 Strategic, multi-perspective research skill using the Asymmetric Research Squad methodology. Deploys 8 specialized persona agents to uncover insights from diverse viewpoints, followed by crucible analysis and emergent insight generation.
 
+## Search & Scrape Engines (Exa + Firecrawl)
+
+This skill prefers MCP-backed search and extraction when those servers are configured, and falls back to the built-in tools otherwise. Pass these engine preferences into every persona prompt (Step 7) and the evidence-triangulation step (Step 12):
+
+- **Search** — Prefer the **Exa** MCP (`web_search_exa`; also `research_paper_search` and `company_research` where the persona's angle fits) as the primary engine for all persona queries. Fall back to the built-in **`WebSearch`** tool if Exa is not available.
+- **Content extraction / primary sources** — Prefer the **Firecrawl** MCP (`firecrawl_scrape` for a single page, `firecrawl_search` for search-and-scrape, `firecrawl_crawl` for a site sweep) to pull full-text primary sources during persona research and Step 12 verification. Fall back to the built-in **`WebFetch`** tool if Firecrawl is not available.
+
+### Preflight engine check & fallback notification
+
+At the start of every run — after parsing arguments (Step 1) and **before deploying any personas** — detect which engines are actually available in this session:
+
+- **Exa** is available if the `web_search_exa` tool is present; otherwise search falls back to built-in `WebSearch`.
+- **Firecrawl** is available if the `firecrawl_scrape` tool is present; otherwise extraction falls back to built-in `WebFetch`.
+
+**For each engine that is missing, print a visible warning to the user before research begins** (one line per missing engine), so they can stop and add keys or choose to continue:
+
+```
+⚠️  Exa not configured — searching with built-in WebSearch
+⚠️  Firecrawl not configured — extracting with built-in WebFetch
+   (results will be lower-fidelity; add the MCP keys and re-run for best quality, or continue)
+```
+
+If **both** engines are present, print nothing — proceed silently on the happy path. Either way, record which engines were active (e.g. `running on built-in search (Exa/Firecrawl not configured)` or `running on Exa + Firecrawl`) in `objective.md`, and remember the result so Step 16 can banner the report. Never block the run on a missing MCP.
+
+If an engine **is** configured but an individual call errors mid-run (e.g. a rate-limit) and a persona falls back to the built-in tool for that one call, append a brief inline note in that persona's findings file rather than interrupting the user — reserve the loud upfront warning for the deterministic "not configured at all" case.
+
 ## Current Research Subject
 
 **Researching**: `$ARGUMENTS`
@@ -578,6 +604,14 @@ cat ${CURSOR_PLUGIN_ROOT}/skills/deep-research/templates/report-structure.md
 ### Step 16: Generate Final Report
 
 Create `$OUTPUT_DIR/report.md` following the template structure.
+
+**Fallback banner**: If the preflight engine check found Exa or Firecrawl missing (i.e. this run used built-in search), prepend a one-line blockquote banner directly under the report's H1 title:
+
+```
+> ⚠️ Generated on built-in search (Exa/Firecrawl not configured) — sources may be lower-fidelity.
+```
+
+If both engines were active, omit the banner.
 
 **Synthesis Principles**:
 
