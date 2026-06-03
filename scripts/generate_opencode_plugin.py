@@ -159,7 +159,7 @@ def build_agents_md() -> str:
     transformed = normalize_agents_runtime_syntax(transformed)
 
     header = (
-        f"<!-- Generated from {SOURCE_RULES_PATH.relative_to(REPO_ROOT)} "
+        f"<!-- Generated from {SOURCE_RULES_PATH.relative_to(REPO_ROOT).as_posix()} "
         "by scripts/generate_opencode_plugin.py — do not edit by hand. -->\n\n"
     )
     return header + transformed

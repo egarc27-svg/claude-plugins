@@ -1,0 +1,5 @@
+# Python dependencies for the ycc bundle generators/validators
+# (scripts/generate_*.py, scripts/validate-*.sh). Install with:
+#   python3 -m pip install -r scripts/requirements.txt
+# CI installs the same set in .github/workflows/validate.yml.
+pyyaml

@@ -15,6 +15,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
+# Make `python3` + UTF-8 output work cross-platform (no-op on Linux/CI).
+# shellcheck source=lib/python-resolve.sh
+source "${SCRIPT_DIR}/lib/python-resolve.sh"
+
 VALID_TARGETS=(inventory cursor codex opencode json)
 TARGETS=("${VALID_TARGETS[@]}")
 
